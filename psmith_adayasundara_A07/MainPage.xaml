@@ -9,12 +9,22 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Button VerticalAlignment="Top" HorizontalAlignment="Center" x:Name="btnImage" Content="Image" Margin="15,12,0,0" Click="btnImage_Click"></Button>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="btnImage" Content="Image" Margin="15,15,15,15" Height="50" Width="200" Click="btnImage_Click"></Button>
+            </StackPanel>
+            <Button Name="PhotoButton" Margin="15,15,15,15" Click="PhotoButton_Click" IsEnabled="False">
+                <Viewbox MaxWidth="40" MaxHeight="40">
+                    <SymbolIcon Symbol="Camera"/>
+                </Viewbox>
+            </Button>
+            <CaptureElement HorizontalAlignment="Left" Name="PreviewControl" Height="400" Width="400"/>
+        </StackPanel>
 
         <Frame x:Name="ImageViewbox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="400" Height="400" Margin="10,0,10,10">
             <Image x:Name="PreviewImage" AutomationProperties.Name="Preview of the image" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Frame>
-        <Grid ManipulationMode ="None" Name="rectangle1" HorizontalAlignment="Left" Width="400" Height="400" VerticalAlignment="Bottom">
+        <Grid ManipulationMode ="None" Name="rectangle1" HorizontalAlignment="Center" Width="400" Height="400" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -27,97 +37,59 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <StackPanel ManipulationMode="All" x:Name="manipulateMe" BorderThickness="2" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped"  x:Name="pnl00" BorderThickness="1" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img00" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl01" BorderThickness="2" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped"  x:Name="pnl01" BorderThickness="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img01" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl02" BorderThickness="2" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped"  x:Name="pnl02" BorderThickness="1" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img02" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl03" BorderThickness="2" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl03" BorderThickness="1" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img03" Stretch="UniformToFill"/>
             </StackPanel>
 
-            <StackPanel x:Name="pnl10" BorderThickness="2" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl10" BorderThickness="1" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img10" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl11" BorderThickness="2" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl11" BorderThickness="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img11" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl12" BorderThickness="2" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl12" BorderThickness="1" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img12" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl13" BorderThickness="2" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl13" BorderThickness="1" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img13" Stretch="UniformToFill"/>
             </StackPanel>
-            
-            <StackPanel x:Name="pnl20" BorderThickness="2" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl20" BorderThickness="1" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img20" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl21" BorderThickness="2" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl21" BorderThickness="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img21" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl22" BorderThickness="2" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl22" BorderThickness="1" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img22" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl23" BorderThickness="2" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel  x:Name="pnl23" Tapped="panel_Tapped"  BorderThickness="1" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img23" Stretch="UniformToFill"/>
             </StackPanel>
 
-            <StackPanel x:Name="pnl30" BorderThickness="2" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl30" BorderThickness="1" Background="White" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img30" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl31" BorderThickness="2" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Tapped="panel_Tapped" x:Name="pnl31" BorderThickness="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img31" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl32" BorderThickness="2" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel x:Name="pnl32" Tapped="panel_Tapped"  BorderThickness="1" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <Image x:Name="img32" Stretch="UniformToFill"/>
             </StackPanel>
-            <StackPanel x:Name="pnl33" BorderThickness="2" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel x:Name="blank" BorderThickness="1" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image x:Name="img33" Stretch="UniformToFill"/>
             </StackPanel>
-
         </Grid>
-        <Canvas x:Name="ContentPanel" Margin="12,0" ManipulationMode="None" >
-            <StackPanel ManipulationMode="All"   Padding="15,15,15,15" Background="Khaki">
-                <StackPanel Background="Red" Height="50" Width="50"  HorizontalAlignment="Left" VerticalAlignment="Top"></StackPanel>
-                <StackPanel Background="AliceBlue" Height="50" Width="50" ManipulationMode="All" RenderTransformOrigin="1.089,-0.377"/>
-                <StackPanel Background="Blue" Height="50" Width="50" ManipulationMode="All" HorizontalAlignment="Left" VerticalAlignment="Top"></StackPanel>
-                <StackPanel Background="Green" Height="50" Width="50" ManipulationMode="All" HorizontalAlignment="Left" VerticalAlignment="Top"></StackPanel>
-            </StackPanel>
-        </Canvas>
+        <TextBlock x:Name="winner" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="100" FontFamily="Jokerman" FontWeight="Bold"></TextBlock>
+
     </Grid>
 </Page>
-<!--Canvas.Left="337" Canvas.Top="69"-->
-<!--<StackPanel Background="Aqua" Canvas.Left="337" Canvas.Top="386" Height="100" Width="100"/>
-            <StackPanel Background="Red" Canvas.Left="231" Canvas.Top="386" Height="100" Width="100">
-            </StackPanel>
-            <StackPanel Background="CadetBlue" Canvas.Left="124" Canvas.Top="386" Height="100" Width="100">
-            </StackPanel>
-            <StackPanel Background="DarkMagenta" Canvas.Left="19" Canvas.Top="386" Height="100" Width="100">
-            </StackPanel>
-            <StackPanel Canvas.Left="337" Background="Orange" Canvas.Top="280" Height="100" Width="100">
-            </StackPanel>
-            <StackPanel Canvas.Left="231" Canvas.Top="280" Background="Green" Height="100" Width="100">
-            </StackPanel>
-            <StackPanel Canvas.Left="124" Canvas.Top="280" Height="100" Background="CornflowerBlue"  Width="100">
-            </StackPanel>
-            <StackPanel Canvas.Left="19" Canvas.Top="280" Height="100" Width="100" Background="DarkGray">
-            </StackPanel>
-            <StackPanel Canvas.Left="337" Canvas.Top="174" Height="100" Width="100" Background="DarkRed">
-            </StackPanel>
-            <StackPanel Canvas.Left="231" Canvas.Top="174" Height="100" Width="100" Background="LightYellow">
-            </StackPanel>
-            <StackPanel Canvas.Left="124" Canvas.Top="174" Height="100" Width="100" Background="OrangeRed">
-            </StackPanel>
-            <StackPanel Canvas.Left="19" Canvas.Top="174" Height="100" Width="100" Background="Chocolate">
-            </StackPanel>-->
-<!--<StackPanel Canvas.Left="231" Canvas.Top="69" Height="100" Width="100" Background="DarkTurquoise">
-            </StackPanel>
-            <StackPanel Canvas.Left="125" Canvas.Top="67" Height="100" Width="100" Background="NavajoWhite">
-            </StackPanel>
-            <StackPanel Canvas.Left="19" Canvas.Top="67" Height="100" Width="100" Background="Firebrick">
-            </StackPanel>-->
-

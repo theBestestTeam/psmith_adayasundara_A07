@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 using Windows.Foundation;
+using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
+using Windows.Media;
+using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.System.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,7 +34,7 @@ namespace psmith_adayasundara_A07
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        List<Bitmap> PictureList = new List<Bitmap>();
+        List<BitmapImage> PictureList = new List<BitmapImage>();
         private TransformGroup transforms;
         private MatrixTransform previousTransform;
         private CompositeTransform deltaTransform;
@@ -43,25 +51,77 @@ namespace psmith_adayasundara_A07
         BitmapImage[,] images = new BitmapImage[4, 4];
         BitmapImage[,] winImage = new BitmapImage[4, 4];
 
+        //Winning list
+        List<BitmapImage> winningList = new List<BitmapImage>();
+
+        //Shuffle List
+        List<StackPanel> shuffleList = new List<StackPanel>();
+        List<KeyValuePair<int, int>> gridLocation = new List<KeyValuePair<int, int>>() {
+                                                    new KeyValuePair<int, int>(0, 0),
+                                                    new KeyValuePair<int, int>(0, 1),
+                                                    new KeyValuePair<int, int>(0, 2),
+                                                    new KeyValuePair<int, int>(0, 3),
+                                                    new KeyValuePair<int, int>(1, 0),
+                                                    new KeyValuePair<int, int>(1, 1),
+                                                    new KeyValuePair<int, int>(1, 2),
+                                                    new KeyValuePair<int, int>(1, 3),
+                                                    new KeyValuePair<int, int>(2, 0),
+                                                    new KeyValuePair<int, int>(2, 1),
+                                                    new KeyValuePair<int, int>(2, 2),
+                                                    new KeyValuePair<int, int>(2, 3),
+                                                    new KeyValuePair<int, int>(3, 0),
+                                                    new KeyValuePair<int, int>(3, 1),
+                                                    new KeyValuePair<int, int>(3, 2),
+                                                    new KeyValuePair<int, int>(3, 3)
+                                                };
+
+        //Camera
+        private static readonly Guid RotationKey = new Guid("C380465D-2271-428C-9B83-ECEA3B4A85C1");
+
         public MainPage()
         {
             this.InitializeComponent();
-            InitManipulationTransforms();
+            AddPanelsToList();
+            //InitManipulationTransforms();
 
             // Register for the various manipulation events that will occur on the shape
-            manipulateMe.ManipulationStarted += new ManipulationStartedEventHandler(ManipulateMe_ManipulationStarted);
-            manipulateMe.ManipulationDelta += new ManipulationDeltaEventHandler(ManipulateMe_ManipulationDelta);
-            manipulateMe.ManipulationCompleted += new ManipulationCompletedEventHandler(ManipulateMe_ManipulationCompleted);
-            manipulateMe.ManipulationInertiaStarting += new ManipulationInertiaStartingEventHandler(ManipulateMe_ManipulationInertiaStarting);
+            //manipulateMe.ManipulationStarted += new ManipulationStartedEventHandler(ManipulateMe_ManipulationStarted);
+            //manipulateMe.ManipulationDelta += new ManipulationDeltaEventHandler(ManipulateMe_ManipulationDelta);
 
-            manipulateMe.ManipulationMode =
-                ManipulationModes.TranslateX |
-                ManipulationModes.TranslateY |
-                ManipulationModes.Rotate |
-                ManipulationModes.TranslateInertia |
-                ManipulationModes.RotateInertia;
+            //manipulateMe.ManipulationMode =
+            //    ManipulationModes.TranslateX |
+            //    ManipulationModes.TranslateY |
+            //    ManipulationModes.Rotate |
+            //    ManipulationModes.TranslateInertia |
+            //    ManipulationModes.RotateInertia;
         }
 
+        
+        private void AddPanelsToList()
+        {
+            shuffleList.Add(pnl00);
+            shuffleList.Add(pnl01);
+            shuffleList.Add(pnl02);
+            shuffleList.Add(pnl03);
+
+            shuffleList.Add(pnl10);
+            shuffleList.Add(pnl11);
+            shuffleList.Add(pnl12);
+            shuffleList.Add(pnl13);
+
+            shuffleList.Add(pnl20);
+            shuffleList.Add(pnl21);
+            shuffleList.Add(pnl22);
+            shuffleList.Add(pnl23);
+
+            shuffleList.Add(pnl30);
+            shuffleList.Add(pnl31);
+            shuffleList.Add(pnl32);
+
+        }
+
+        #region Picture Manipulation
+        // ---------------- TRANSFORMATION OF SQAURE TILE X & Y AXIS ----------------- //
         private void InitManipulationTransforms()
         {
             transforms = new TransformGroup();
@@ -72,7 +132,7 @@ namespace psmith_adayasundara_A07
             transforms.Children.Add(deltaTransform);
 
             // Set the render transform on the rect
-            manipulateMe.RenderTransform = transforms;
+            //manipulateMe.RenderTransform = transforms;
         }
 
         // When a manipulation begins, change the color of the object to reflect
@@ -80,7 +140,7 @@ namespace psmith_adayasundara_A07
         void ManipulateMe_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             forceManipulationsToEnd = false;
-            manipulateMe.Background = new SolidColorBrush(Windows.UI.Colors.DeepSkyBlue);
+            //manipulateMe.Background = new SolidColorBrush(Windows.UI.Colors.DeepSkyBlue);
         }
 
         // Process the change resulting from a manipulation
@@ -97,7 +157,6 @@ namespace psmith_adayasundara_A07
 
             // Get center point for rotation
             Windows.Foundation.Point center = previousTransform.TransformPoint(new Windows.Foundation.Point(e.Position.X, e.Position.Y));
-            //Point center = previousTransform.TransformPoint(new Point((int)e.Position.X,(int)e.Position.Y));
             deltaTransform.CenterX = center.X;
             deltaTransform.CenterY = center.Y;
 
@@ -107,20 +166,10 @@ namespace psmith_adayasundara_A07
             deltaTransform.TranslateX = e.Delta.Translation.X;
             deltaTransform.TranslateY = e.Delta.Translation.Y;
         }
+        #endregion Picture Manipulation
 
-        // When a manipulation that's a result of inertia begins, change the color of the
-        // the object to reflect that inertia has taken over
-        void ManipulateMe_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
-        {
-            manipulateMe.Background = new SolidColorBrush(Windows.UI.Colors.RoyalBlue);
-        }
-
-        // When a manipulation has finished, reset the color of the object
-        void ManipulateMe_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            manipulateMe.Background = new SolidColorBrush(Windows.UI.Colors.LightGray);
-        }
-
+        #region Setting up Game
+        // -------------- IMAGE MANIPULATION --------------- //
         //Open an image
         private async void btnImage_Click(object sender, RoutedEventArgs e)
         {
@@ -182,16 +231,21 @@ namespace psmith_adayasundara_A07
 
         }
 
+        //Convert 
         private async void PlaceImage(BitmapDecoder decoder)
         {
+            int i = 0;
+            int j = 0;
+
             var windowHeight = rectangle1.ActualHeight;
             var windowWidth = rectangle1.ActualWidth;
             var imageHeight = decoder.PixelHeight / 4;
             var imageWidth = decoder.PixelHeight / 4;
             var blocks = new BitmapImage[4, 4];
-            for (int i = 0; i < 4; i++)
+
+            for (i = 0; i < 4; i++)
             {
-                for(int j =0; j<4; j++)
+                for(j = 0; j < 4; j++)
                 {
                     if( i== 3 && j==3)
                     {
@@ -201,6 +255,7 @@ namespace psmith_adayasundara_A07
                     InMemoryRandomAccessStream randomAccessStream = new InMemoryRandomAccessStream(); //Loading images to encoder
                     BitmapEncoder encoder = await BitmapEncoder.CreateForTranscodingAsync(randomAccessStream, decoder); //Bitmap encoder initiate
                     BitmapBounds bounds = new BitmapBounds(); //Used to transform the encoder to specify which part of the image will be used
+                   
                     bounds.Height = imageHeight;
                     bounds.Width = imageWidth;
                     bounds.X = 0 + imageWidth * (uint)i;
@@ -215,46 +270,86 @@ namespace psmith_adayasundara_A07
                         string s = ex.ToString();
                     }
 
-                    BitmapImage bitImage = new BitmapImage(); //AnImage to be displayed
+                    BitmapImage bitImage = new BitmapImage(); //An Image to be displayed
                     bitImage.SetSource(randomAccessStream);
                     blocks[i, j] = bitImage; //To save the Bitmap Image
                     images[i, j] = blocks[i, j]; //Source of the images to be stored
+                    //PictureList.Add(images[i, j]);
                 }
             }
-            for (int i = 0; i < 4; i++)
+            for (i = 0; i < 4; i++)
             {
-                for(int j = 0; j<4;j++)
+                for(j = 0; j < 4; j++)
                 { 
                     winImage[i, j] = images[i, j];
+                    winningList.Add(winImage[i,j]);
                 }
             }
-
-            //Randomize the blocks to insert into grid
+            
+            //Assign image to source
             //Column 0
-            img00.Source = blocks[0, 0];
-            img01.Source = blocks[0, 1];
-            img02.Source = blocks[0, 2];
-            img03.Source = blocks[0, 3];
+            img00.Source = images[0, 0];
+            img01.Source = images[0, 1];
+            img02.Source = images[0, 2];
+            img03.Source = images[0, 3];
 
             //Column 1
-            img10.Source = blocks[1, 0];
-            img11.Source = blocks[1, 1];
-            img12.Source = blocks[1, 2];
-            img13.Source = blocks[1, 3];
+            img10.Source = images[1, 0];
+            img11.Source = images[1, 1];
+            img12.Source = images[1, 2];
+            img13.Source = images[1, 3];
 
             //Column 2
-            img20.Source = blocks[2, 0];
-            img21.Source = blocks[2, 1];
-            img22.Source = blocks[2, 2];
-            img23.Source = blocks[2, 3];
+            img20.Source = images[2, 0];
+            img21.Source = images[2, 1];
+            img22.Source = images[2, 2];
+            img23.Source = images[2, 3];
 
             //Column 3
-            img30.Source = blocks[3, 0];
-            img31.Source = blocks[3, 1];
-            img32.Source = blocks[3, 2];
-            img33.Source = blocks[3, 3];
+            img30.Source = images[3, 0];
+            img31.Source = images[3, 1];
+            img32.Source = images[3, 2];
+            img33.Source = images[3, 3];
+
+
+            //Randomize the blocks to insert into grid
+            Shuffle();
 
         }
+
+        //DIS MUDDAFECKING SHUFFLE LIST BITCH ASS POOP POOP
+        public void Shuffle()
+        {
+            Random rand = new Random();
+            List<int> generatedNumb = new List<int>();
+            int k = 0;
+            for(k = 0; k < 15; k++)
+            {
+                int randNum = rand.Next(15);
+                if(generatedNumb.Contains(randNum))
+                {
+                    k--;
+                    continue;
+                }
+                generatedNumb.Add(randNum);
+            }
+            k = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    
+                    if (j == 3 && i == 3)
+                    {
+                        break;
+                    }
+                    Grid.SetColumn(shuffleList[generatedNumb[k]], i);
+                    Grid.SetRow(shuffleList[generatedNumb[k]], j);
+                    k++;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Asynchronously attempts to get the oriented dimensions and EXIF orientation from the image file.
@@ -291,6 +386,126 @@ namespace psmith_adayasundara_A07
             //ImageViewbox.RenderTransform = m_transform;
         }
 
+        private void panel_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            StackPanel panel = (StackPanel)sender;
+            int blankRow = 0;
+            int blankCol = 0;
+            int panelRow = 0;
+            int panelCol = 0;
+            string panelName = null;
 
+            blankRow = Grid.GetRow(blank);
+            blankCol = Grid.GetColumn(blank);
+            panelRow = Grid.GetRow(panel);
+            panelCol = Grid.GetColumn(panel);
+            panelName = panel.Name;
+            
+            if((blankRow == panelRow) && ((panelCol + 1) == blankCol)) //Use on Col 2, Row 3
+            {
+                panel.ManipulationStarted += new ManipulationStartedEventHandler(ManipulateMe_ManipulationStarted);
+
+                Grid.SetColumn(panel, (Grid.GetColumn(panel) + 1));
+                Grid.SetColumn(blank, (Grid.GetColumn(blank) - 1));
+                panel.ManipulationDelta += new ManipulationDeltaEventHandler(ManipulateMe_ManipulationDelta);
+                panel.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.TranslateInertia;
+
+            }
+            else if ((blankRow == panelRow) && ((panelCol - 1) == blankCol))
+            {
+                Grid.SetColumn(panel, (Grid.GetColumn(panel) - 1));
+                Grid.SetColumn(blank, (Grid.GetColumn(blank) + 1));
+            }
+            else if ((blankRow == (panelRow + 1)) && (panelCol == blankCol))
+            {
+                Grid.SetRow(panel, (Grid.GetRow(panel) + 1));
+                Grid.SetRow(blank, (Grid.GetRow(blank) - 1));
+            }
+            else if ((blankRow == (panelRow - 1)) && (panelCol == blankCol))
+            {
+                Grid.SetRow(panel, (Grid.GetRow(panel) - 1));
+                Grid.SetRow(blank, (Grid.GetRow(blank) + 1));
+            }
+
+            //Check Win State
+            if(checkWin())
+            {
+                winner.Text = "YOU WIN!!";
+                //Stop timer
+            }
+        }
+
+        private bool checkWin()
+        {
+            bool checkRow = false;
+            bool checkCol = false;
+            bool goodColRow = false;
+
+            if((Grid.GetRow(pnl00) == 0) &&
+               (Grid.GetRow(pnl01) == 1) &&
+               (Grid.GetRow(pnl02) == 2) &&
+               (Grid.GetRow(pnl03) == 3) &&
+
+               (Grid.GetRow(pnl10) == 0) &&
+               (Grid.GetRow(pnl11) == 1) &&
+               (Grid.GetRow(pnl12) == 2) &&
+               (Grid.GetRow(pnl13) == 3) &&
+
+               (Grid.GetRow(pnl20) == 0) &&
+               (Grid.GetRow(pnl21) == 1) &&
+               (Grid.GetRow(pnl22) == 2) &&
+               (Grid.GetRow(pnl23) == 3) &&
+
+               (Grid.GetRow(pnl30) == 0) &&
+               (Grid.GetRow(pnl31) == 1) &&
+               (Grid.GetRow(pnl32) == 2) &&
+               (Grid.GetRow(blank) == 3))
+            {
+                checkRow = true;
+            }
+
+            if ((Grid.GetColumn(pnl00) == 0) &&
+                (Grid.GetColumn(pnl01) == 0) &&
+                (Grid.GetColumn(pnl02) == 0) &&
+                (Grid.GetColumn(pnl03) == 0) &&
+
+                (Grid.GetColumn(pnl10) == 1) &&
+                (Grid.GetColumn(pnl11) == 1) &&
+                (Grid.GetColumn(pnl12) == 1) &&
+                (Grid.GetColumn(pnl12) == 1) &&
+
+                (Grid.GetColumn(pnl20) == 2) &&
+                (Grid.GetColumn(pnl21) == 2) &&
+                (Grid.GetColumn(pnl22) == 2) &&
+                (Grid.GetColumn(pnl23) == 2) &&
+
+                (Grid.GetColumn(pnl30) == 3) &&
+                (Grid.GetColumn(pnl31) == 3) &&
+                (Grid.GetColumn(pnl32) == 3) &&
+                (Grid.GetColumn(blank) == 3))
+            {
+                checkCol = true;
+            }
+            
+            if(checkCol && checkRow)
+            {
+                goodColRow = true;
+            }
+            //throw new NotImplementedException();
+            return goodColRow;
+        }
+        #endregion Setting up Game
+        // -------------------------- PHOTO CAMERA FUN -------------------- //
+        //Start the camera
+        private async void PhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            //await TakeAdvancedCapturePhotoAsync();
+            StartCamera();
+        }
+
+        public void StartCamera()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

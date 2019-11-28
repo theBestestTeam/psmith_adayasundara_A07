@@ -15,7 +15,7 @@
 
   <Properties>
     <DisplayName>psmith_adayasundara_A07</DisplayName>
-    <PublisherDisplayName>adaya</PublisherDisplayName>
+    <PublisherDisplayName>adaya_psmith</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -37,13 +37,16 @@
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="psmith_adayasundara_A07"
         BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
+        </uap:DefaultTile >
+        <uap:SplashScreen Image="Assets\SplashScreen.png"/>
       </uap:VisualElements>
     </Application>
   </Applications>
 
   <Capabilities>
-    <Capability Name="internetClient" />
+    <uap:Capability Name="picturesLibrary"/>
+    <DeviceCapability Name="microphone"/>
+    <DeviceCapability Name="webcam"/>
   </Capabilities>
 </Package>
