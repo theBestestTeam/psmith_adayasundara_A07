@@ -1,4 +1,20 @@
-﻿using System;
+﻿/*
+*	FILE			:	MainPage.xaml.cs
+*	PROJECT			:	PROG2121 - Windows and Mobile Programming
+*	PROGRAMMER		:	Amy Dayasundara, Paul Smith
+*	FIRST VERSION	:	2019 - 11 - 22
+*	DESCRIPTION		:	
+*	                    This file takes the picture from either the file or camers.
+*	                    The picture is inserted into a Frame that manipulates the bitmap
+*	                    of the picture and slices it into 16 tiles, where the last tile is
+*	                    a null tile.
+*	                    When one of the tiles are clicked/ touches, a timer starts and a counter for
+*	                    the number of moves starts. Once the tiles are in a winning position, a statement
+*	                    is displayed telling the user has won.
+*/
+
+#region Using Statements
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -26,6 +42,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
+#endregion Using Statements
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -78,6 +95,7 @@ namespace psmith_adayasundara_A07
         //Timer and moves
         Stopwatch timer = new Stopwatch();
         int inMoves = 0;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -105,7 +123,6 @@ namespace psmith_adayasundara_A07
             shuffleList.Add(pnl30);
             shuffleList.Add(pnl31);
             shuffleList.Add(pnl32);
-
         }
 
 
@@ -172,7 +189,10 @@ namespace psmith_adayasundara_A07
 
         }
 
-        //Convert 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="decoder"></param>
         private async void PlaceImage(BitmapDecoder decoder)
          {
             int i = 0;
@@ -262,6 +282,9 @@ namespace psmith_adayasundara_A07
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Shuffle()
         {
             Random rand = new Random();
@@ -327,15 +350,13 @@ namespace psmith_adayasundara_A07
             PreviewImage.Source = null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void panel_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ++inMoves;
-            lblMoves.Text = "" + inMoves;
-            if(inMoves==1)
-            {
-                timer.Start();
-            }
-            lblTimeElapsed.Text = timer.Elapsed.ToString().Remove(8);
 
             StackPanel panel = (StackPanel)sender;
             int blankRow = 0;
@@ -355,31 +376,48 @@ namespace psmith_adayasundara_A07
 
                 Grid.SetColumn(panel, (Grid.GetColumn(panel) + 1));
                 Grid.SetColumn(blank, (Grid.GetColumn(blank) - 1));
+                ++inMoves;
+                lblMoves.Text = "" + inMoves;
             }
             else if ((blankRow == panelRow) && ((panelCol - 1) == blankCol))
             {
                 Grid.SetColumn(panel, (Grid.GetColumn(panel) - 1));
                 Grid.SetColumn(blank, (Grid.GetColumn(blank) + 1));
+                ++inMoves;
+                lblMoves.Text = "" + inMoves;
             }
             else if ((blankRow == (panelRow + 1)) && (panelCol == blankCol))
             {
                 Grid.SetRow(panel, (Grid.GetRow(panel) + 1));
                 Grid.SetRow(blank, (Grid.GetRow(blank) - 1));
+                ++inMoves;
+                lblMoves.Text = "" + inMoves;
             }
             else if ((blankRow == (panelRow - 1)) && (panelCol == blankCol))
             {
                 Grid.SetRow(panel, (Grid.GetRow(panel) - 1));
                 Grid.SetRow(blank, (Grid.GetRow(blank) + 1));
+                ++inMoves;
+                lblMoves.Text = "" + inMoves;
+            }
+
+            if (inMoves == 1)
+            {
+                timer.Start();
             }
 
             //Check Win State
-            if(checkWin())
+            if (checkWin())
             {
                 winner.Text = "YOU WIN!!";
                 timer.Stop();
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private bool checkWin()
         {
             bool checkRow = false;
@@ -444,6 +482,12 @@ namespace psmith_adayasundara_A07
         #region Taking a picture
         // -------------------------- PHOTO CAMERA FUN -------------------- //
         //Start the camera
+        /// <summary>
+        ///     When the camera button is clicked, the Camera UI of the computer will open.
+        ///     
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void PhotoButton_Click(object sender, RoutedEventArgs e)
         {
             try
