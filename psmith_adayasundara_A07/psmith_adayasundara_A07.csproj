@@ -120,13 +120,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Assets\Camera.cs" />
-    <Compile Include="FileSystem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ManipulateSquare.cs" />
-    <Compile Include="PossiblePositions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

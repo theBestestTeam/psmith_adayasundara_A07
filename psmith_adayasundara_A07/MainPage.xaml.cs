@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.System.Display;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
@@ -34,11 +36,6 @@ namespace psmith_adayasundara_A07
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        List<BitmapImage> PictureList = new List<BitmapImage>();
-        private TransformGroup transforms;
-        private MatrixTransform previousTransform;
-        private CompositeTransform deltaTransform;
-        private bool forceManipulationsToEnd;
 
         //Opening file variables
         string m_fileToken;
@@ -78,22 +75,13 @@ namespace psmith_adayasundara_A07
         //Camera
         private static readonly Guid RotationKey = new Guid("C380465D-2271-428C-9B83-ECEA3B4A85C1");
 
+        //Timer and moves
+        Stopwatch timer = new Stopwatch();
+        int inMoves = 0;
         public MainPage()
         {
             this.InitializeComponent();
             AddPanelsToList();
-            //InitManipulationTransforms();
-
-            // Register for the various manipulation events that will occur on the shape
-            //manipulateMe.ManipulationStarted += new ManipulationStartedEventHandler(ManipulateMe_ManipulationStarted);
-            //manipulateMe.ManipulationDelta += new ManipulationDeltaEventHandler(ManipulateMe_ManipulationDelta);
-
-            //manipulateMe.ManipulationMode =
-            //    ManipulationModes.TranslateX |
-            //    ManipulationModes.TranslateY |
-            //    ManipulationModes.Rotate |
-            //    ManipulationModes.TranslateInertia |
-            //    ManipulationModes.RotateInertia;
         }
 
         
@@ -120,53 +108,6 @@ namespace psmith_adayasundara_A07
 
         }
 
-        #region Picture Manipulation
-        // ---------------- TRANSFORMATION OF SQAURE TILE X & Y AXIS ----------------- //
-        private void InitManipulationTransforms()
-        {
-            transforms = new TransformGroup();
-            previousTransform = new MatrixTransform() { Matrix = Matrix.Identity };
-            deltaTransform = new CompositeTransform();
-
-            transforms.Children.Add(previousTransform);
-            transforms.Children.Add(deltaTransform);
-
-            // Set the render transform on the rect
-            //manipulateMe.RenderTransform = transforms;
-        }
-
-        // When a manipulation begins, change the color of the object to reflect
-        // that a manipulation is in progress
-        void ManipulateMe_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            forceManipulationsToEnd = false;
-            //manipulateMe.Background = new SolidColorBrush(Windows.UI.Colors.DeepSkyBlue);
-        }
-
-        // Process the change resulting from a manipulation
-        void ManipulateMe_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            // If the reset button has been pressed, mark the manipulation as completed
-            if (forceManipulationsToEnd)
-            {
-                e.Complete();
-                return;
-            }
-
-            previousTransform.Matrix = transforms.Value;
-
-            // Get center point for rotation
-            Windows.Foundation.Point center = previousTransform.TransformPoint(new Windows.Foundation.Point(e.Position.X, e.Position.Y));
-            deltaTransform.CenterX = center.X;
-            deltaTransform.CenterY = center.Y;
-
-            // Look at the Delta property of the ManipulationDeltaRoutedEventArgs to retrieve
-            // the rotation, scale, X, and Y changes
-            deltaTransform.Rotation = e.Delta.Rotation;
-            deltaTransform.TranslateX = e.Delta.Translation.X;
-            deltaTransform.TranslateY = e.Delta.Translation.Y;
-        }
-        #endregion Picture Manipulation
 
         #region Setting up Game
         // -------------- IMAGE MANIPULATION --------------- //
@@ -233,7 +174,7 @@ namespace psmith_adayasundara_A07
 
         //Convert 
         private async void PlaceImage(BitmapDecoder decoder)
-        {
+         {
             int i = 0;
             int j = 0;
 
@@ -314,10 +255,13 @@ namespace psmith_adayasundara_A07
 
             //Randomize the blocks to insert into grid
             Shuffle();
+            timer.Reset();
+            lblTimeElapsed.Text = "00:00:00";
+            inMoves = 0;
+            lblMoves.Text = "0";
 
         }
 
-        //DIS MUDDAFECKING SHUFFLE LIST BITCH ASS POOP POOP
         public void Shuffle()
         {
             Random rand = new Random();
@@ -381,13 +325,18 @@ namespace psmith_adayasundara_A07
             m_scaleFactor = 1;
 
             PreviewImage.Source = null;
-            //m_transform.CenterX = ImageViewbox.Width / 2;
-            //m_transform.CenterY = ImageViewbox.Height / 2;
-            //ImageViewbox.RenderTransform = m_transform;
         }
 
         private void panel_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            ++inMoves;
+            lblMoves.Text = "" + inMoves;
+            if(inMoves==1)
+            {
+                timer.Start();
+            }
+            lblTimeElapsed.Text = timer.Elapsed.ToString().Remove(8);
+
             StackPanel panel = (StackPanel)sender;
             int blankRow = 0;
             int blankCol = 0;
@@ -401,15 +350,11 @@ namespace psmith_adayasundara_A07
             panelCol = Grid.GetColumn(panel);
             panelName = panel.Name;
             
-            if((blankRow == panelRow) && ((panelCol + 1) == blankCol)) //Use on Col 2, Row 3
+            if((blankRow == panelRow) && ((panelCol + 1) == blankCol)) 
             {
-                panel.ManipulationStarted += new ManipulationStartedEventHandler(ManipulateMe_ManipulationStarted);
 
                 Grid.SetColumn(panel, (Grid.GetColumn(panel) + 1));
                 Grid.SetColumn(blank, (Grid.GetColumn(blank) - 1));
-                panel.ManipulationDelta += new ManipulationDeltaEventHandler(ManipulateMe_ManipulationDelta);
-                panel.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.TranslateInertia;
-
             }
             else if ((blankRow == panelRow) && ((panelCol - 1) == blankCol))
             {
@@ -431,7 +376,7 @@ namespace psmith_adayasundara_A07
             if(checkWin())
             {
                 winner.Text = "YOU WIN!!";
-                //Stop timer
+                timer.Stop();
             }
         }
 
@@ -495,17 +440,45 @@ namespace psmith_adayasundara_A07
             return goodColRow;
         }
         #endregion Setting up Game
+
+        #region Taking a picture
         // -------------------------- PHOTO CAMERA FUN -------------------- //
         //Start the camera
         private async void PhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            //await TakeAdvancedCapturePhotoAsync();
-            StartCamera();
-        }
+            try
+            {
+                CameraCaptureUI captureUI = new CameraCaptureUI();
+                StorageFile file = await captureUI.CaptureFileAsync(CameraCaptureUIMode.Photo);
 
-        public void StartCamera()
-        {
-            throw new NotImplementedException();
+                if (file != null)
+                {
+                    BitmapImage bitmapCamera = new BitmapImage();
+                    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
+                    {
+                        //bitmapCamera.SetSource(fileStream);
+                        await bitmapCamera.SetSourceAsync(fileStream);
+                        BitmapDecoder decoder = await BitmapDecoder.CreateAsync(fileStream);
+                        PlaceImage(decoder);
+
+                    }
+                    PreviewImage.Source = bitmapCamera;
+                }
+                else
+                {
+                    var dialog1 = new MessageDialog("Error");
+                    dialog1.ShowAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                var dialog1 = new MessageDialog("Error");
+                dialog1.ShowAsync();
+
+            }
         }
+        #endregion Taking a picture
+
     }
 }

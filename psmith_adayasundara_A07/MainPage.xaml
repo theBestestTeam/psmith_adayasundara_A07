@@ -9,22 +9,28 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <StackPanel HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Center">
+            <TextBlock Text="Timer:" FontSize="50"/>
+            <TextBlock x:Name="lblTimeElapsed" Text="00:00:00" FontSize="75"></TextBlock>
+            <TextBlock Text="Moves made:" FontSize="50"/>
+            <TextBlock x:Name="lblMoves" HorizontalAlignment="Center" FontSize="75" ></TextBlock>
+        </StackPanel>
+
         <StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="btnImage" Content="Image" Margin="15,15,15,15" Height="50" Width="200" Click="btnImage_Click"></Button>
+                <Button VerticalAlignment="Top" HorizontalAlignment="Left" x:Name="btnImage" Content="Image From File" Margin="15,15,15,15" Height="50" Width="150" Click="btnImage_Click" FontWeight="Normal" FontFamily="Elephant" FontSize="15" Background="#33000000"/>
+                <Button Name="PhotoButton" Height="50" Margin="0,15,15,15" Click="PhotoButton_Click" IsEnabled="True">
+                    <Viewbox MaxWidth="40" MaxHeight="40">
+                        <SymbolIcon Symbol="Camera"/>
+                    </Viewbox>
+                </Button>
             </StackPanel>
-            <Button Name="PhotoButton" Margin="15,15,15,15" Click="PhotoButton_Click" IsEnabled="False">
-                <Viewbox MaxWidth="40" MaxHeight="40">
-                    <SymbolIcon Symbol="Camera"/>
-                </Viewbox>
-            </Button>
-            <CaptureElement HorizontalAlignment="Left" Name="PreviewControl" Height="400" Width="400"/>
         </StackPanel>
 
         <Frame x:Name="ImageViewbox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="400" Height="400" Margin="10,0,10,10">
             <Image x:Name="PreviewImage" AutomationProperties.Name="Preview of the image" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Frame>
-        <Grid ManipulationMode ="None" Name="rectangle1" HorizontalAlignment="Center" Width="400" Height="400" VerticalAlignment="Center">
+        <Grid ManipulationMode ="None" Name="rectangle1"  HorizontalAlignment="Center" Width="400" Height="400" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
